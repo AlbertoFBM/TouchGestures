@@ -1,43 +1,58 @@
 package com.aserranor.usinggestures;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MotionEventCompat;
+import androidx.core.view.GestureDetectorCompat;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String DEBUG_TAG = "Using Gestures";
+    private static final String DEBUG_TAG = "Using Gestures";
+
+    private GestureDetectorCompat mDetector;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mDetector = new GestureDetectorCompat(this, new MyGestureListener());
+    }
 
-        View view = findViewById(R.id.button);
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        this.mDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
 
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
 
-                int action = MotionEventCompat.getActionMasked(event);
+        @Override
+        public boolean onDown(MotionEvent event) {
+            Log.d(DEBUG_TAG,"onDown: " + event.toString());
+            Toast toast = Toast.makeText(getApplicationContext(), "on Down", Toast.LENGTH_SHORT);
+            toast.show();
+            return true;
+        }
 
-                switch (action){
-                    case (MotionEvent.ACTION_DOWN):
-                        Log.d(DEBUG_TAG, "View action was DOWN");
-                        return true;
-                    case (MotionEvent.ACTION_UP):
-                        Log.d(DEBUG_TAG,"View action was UP");
-                        return true;
-                    case (MotionEvent.ACTION_MOVE):
-                        Log.d(DEBUG_TAG, "View action was MOVE");
-                        return true;
-                    default:
-                        return MainActivity.super.onTouchEvent(event);
-                }
-            }
-        });
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2,
+                               float velocityX, float velocityY) {
+            Log.d(DEBUG_TAG, "onFling: " + event1.toString() + event2.toString());
+            Toast toast = Toast.makeText(getApplicationContext(), "on Fling", Toast.LENGTH_SHORT);
+            toast.show();
+
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent event) {
+            Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+            Toast toast = Toast.makeText(getApplicationContext(), "on Double Tap", Toast.LENGTH_SHORT);
+            toast.show();
+            return true;
+        }
     }
 }
